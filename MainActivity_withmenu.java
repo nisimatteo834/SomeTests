@@ -1,11 +1,9 @@
 package com.example.android.sometests;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,9 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-
-public class SideMenu extends AppCompatActivity
+public class MainActivity_withmenu extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
@@ -25,7 +23,7 @@ public class SideMenu extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab); //@matteo here we show the button corner-right
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,9 +41,9 @@ public class SideMenu extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu choices = navigationView.getMenu();
         MenuItem nav_camera = choices.findItem(R.id.nav_camera);
-        nav_camera.setTitle("Measure WiFi Power");
-        nav_camera.setIcon(R.drawable.wifi);
+        nav_camera.setTitle("Maybe I changed the title");
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -88,11 +86,7 @@ public class SideMenu extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-            Intent intent=new Intent(this,MainActivity.class);
-            startActivity(intent);
         } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(this,MainActivity.class);
-            startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
 

@@ -1,38 +1,32 @@
 package com.example.android.sometests;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.provider.Settings;
 import android.text.format.Formatter;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ProgressBar;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.net.wifi.WifiManager;
-import com.example.android.sometests.Wifi;
-
-import org.w3c.dom.Text;
 
 
 public class MainActivity extends Activity
 {
+    LocationManager locationManager = null;
+    WifiManager wifi = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        wifi = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+
         this.updateValues();
 
     }
@@ -58,16 +52,10 @@ public class MainActivity extends Activity
     }
 
     private void updateValues(){
-        final WifiManager wifi = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
+        this.checkWifi();
+        this.checkGPS();
 
-        if (!wifi.isWifiEnabled()) {
-
-            if (wifi.getWifiState() != WifiManager.WIFI_STATE_ENABLING) {
-
-                wifi.setWifiEnabled(true);
-            }
-        }
 
         TextView ssid_value = (TextView) findViewById(R.id.SSID_value);
         ssid_value.setText(wifi.getConnectionInfo().getSSID());
@@ -90,6 +78,76 @@ public class MainActivity extends Activity
         GW.setText(Formatter.formatIpAddress(wifi.getDhcpInfo().gateway));
 
 
+    }
+
+    private boolean isLocationEnabled(LocationManager locationManager) {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    private void showAlertGPS() {
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Enable Location")
+                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
+                        "use this app")
+                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    }
+                });
+        dialog.show();
+    }
+
+    private void showAlertWIFI() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Enable Location")
+                .setMessage("Your Wi-Fi is not Enabled.\nPlease Enable Wi-Fi to " +
+                        "use this app")
+                .setPositiveButton("Wi-Fi Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        Intent myIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                        startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    }
+                });
+        dialog.show();
+    }
+
+    private void checkWifi(){
+
+        try{
+            if (!wifi.isWifiEnabled()) {
+
+                this.showAlertWIFI();
+
+            }
+
+        }
+        catch (NullPointerException npo){
+            System.out.println(npo.getMessage());
+        }
+
+
+    }
+
+    private void checkGPS(){
+        if (!this.isLocationEnabled(locationManager))
+        {
+            this.showAlertGPS();
+        }
     }
 
 }
